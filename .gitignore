@@ -1,0 +1,17 @@
+.gradle/
+**/build/
+local.properties
+*.jks
+*.keystore
+keystore.properties
+.idea/
+
+# Local secrets, exports and generated packages
+.env
+.env.*
+*.pem
+*.p12
+*.apk
+*.aab
+rooted-*.json
+

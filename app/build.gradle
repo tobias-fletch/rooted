@@ -1,0 +1,40 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'com.tobiasfletcher.rooted'
+    compileSdk 36
+    buildFeatures { buildConfig true }
+    defaultConfig {
+        applicationId 'com.tobiasfletcher.rooted'
+        minSdk 26
+        targetSdk 36
+        versionCode 7
+        versionName '0.5.0'
+        testInstrumentationRunner 'com.tobiasfletcher.rooted.SmokeInstrumentation'
+    }
+    signingConfigs {
+        if (System.getenv('ROOTED_KEYSTORE')) {
+            release {
+                storeFile file(System.getenv('ROOTED_KEYSTORE'))
+                storePassword System.getenv('ROOTED_STORE_PASSWORD')
+                keyAlias System.getenv('ROOTED_KEY_ALIAS')
+                keyPassword System.getenv('ROOTED_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (System.getenv('ROOTED_KEYSTORE')) signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+dependencies {
+    implementation 'androidx.webkit:webkit:1.14.0'
+    testImplementation 'junit:junit:4.13.2'
+}
+

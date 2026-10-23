@@ -1,0 +1,21 @@
+ROOTED — OFFLINE ANDROID LISTING DRAFT
+App name: Rooted
+Short description: Track hydroponic and soil plants, nutrients, reservoirs, and growth.
+
+Track your growing space on your phone, without an account.
+Rooted supports aeroponics bays, DWC jars, Kratky buckets, soil pots and custom containers. Track multiple plants in shared containers, seedlings, plant spaces, growth stages, moves and repotting.
+
+Record pH, EC, PPM and temperature. Log water additions and reservoir changes with optional final measurements and nutrient doses. Record multi-part nutrients separately, using metric or US customary volume units such as mL, liters, gallons, teaspoons and tablespoons, plus weight units.
+
+Keep notes, photos and a dated timeline. Open directly to your plants and quickly record care. Your journal works offline and stays on your phone. Export and restore backups through Android's file picker. Local recovery copies help recover earlier saves and imports.
+
+No sign-in, ads, analytics or cloud synchronization.
+Rooted records the care you provide; it does not prescribe nutrient doses or diagnose plant health.
+
+Category suggestion: Lifestyle
+Ads: No
+App access: No account required; all features available offline.
+Support email/developer name: Publisher must finalize.
+Privacy policy URL: Must be publicly hosted before Play submission.
+Data safety: Review against the final artifact. Rooted itself has no network access or collection. User-initiated export may use a cloud document provider chosen in Android's picker. The old Firebase-enabled app's declarations do not describe this version.
+Complete rating and audience questionnaires in Play Console. Do not reuse earlier cloud-sync screenshots or descriptions.

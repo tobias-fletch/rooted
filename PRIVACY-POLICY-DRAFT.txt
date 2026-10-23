@@ -1,0 +1,16 @@
+ROOTED PRIVACY POLICY — OFFLINE ANDROID 0.5.0
+Prepared October 22, 2026. Publisher contact and public URL must be finalized before store submission.
+
+Rooted stores plant names, container details, care measurements, nutrient doses, dates, notes and compressed photos locally in its private Android app storage. Rooted 0.5.0 has no accounts, Internet permission, advertising, analytics or remote database connection. The app does not transmit journal content to the developer.
+
+Rooted uses Android's document picker to let you choose individual photos and import/export backup files. It does not request broad photo-library, camera or storage permissions.
+
+The app keeps a previous valid save, a pre-import recovery copy, and a one-time pre-upgrade journal copy locally. Android automatic cloud backup and device transfer are disabled. All local journal and recovery data is removed when you uninstall Rooted or clear its app storage. Exported files must be removed separately wherever you saved them.
+
+Backup files include notes and photos and are not encrypted by Rooted. Exporting is your choice. If you select a cloud document provider, that provider stores/processes the file under its own terms.
+
+If upgrading from an earlier version that supported Firebase accounts, existing locally cached journals can be manually recovered. They are not uploaded or downloaded by this version. This update does not delete previously stored Firebase data or accounts. Copies on other devices and past exported backups remain until separately removed.
+
+Contact: publisher/support email not yet chosen.
+Before publication, add the responsible publisher/support contact and host this policy at a public, accessible URL. Review the final signed artifact and listing declarations together.
+

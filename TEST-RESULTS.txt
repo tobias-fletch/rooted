@@ -1,0 +1,21 @@
+Rooted 0.5.0 verification — October 22, 2026
+
+PASS: Core plant/container, slot, movement, notes, backup and page-rendering regression suites.
+PASS: Timeline start dates, backdated entries, corrected dates, stable ordering and latest measurements.
+PASS: Combined reservoir readings and nutrient doses; unit conversions; soil feeding; overflow rejection and atomic rollback.
+PASS: Out-of-order moves retain the latest placement; stage history excludes harvested/archived plants at the correct time.
+PASS: Automatic plant links recalculate after move-date changes; explicitly confirmed manual links remain unchanged.
+PASS: Historical slot conflicts reject and roll back the complete edit.
+PASS: Additive, idempotent legacy migration preserves existing text, associations, current placement/stage and current volume. Incomplete stage/location history is marked uncertain rather than guessed.
+PASS: Reservoir replay ignores stale before/result totals; reordered top-ups do not double count; equal timestamps are deterministic; gallon/liter changes preserve physical volume.
+PASS: Confirmed imports, pre-import recovery, failure rollback and corrupted-primary recovery.
+PASS: API 36 Android emulator: real forms for historical moves, date correction, automatic links, checkbox-based manual links, history-detail correction, container-unit conversion and phone-width layout.
+PASS: Upgrade from seeded 0.4.0 APK to the 0.5.0 release build: device journal preserved, cached account journal recoverable offline, one-time original pre-upgrade journal retained.
+PASS: Existing Android suite covering offline startup, 48px care controls, photos, nutrient/measurement/reservoir forms, movement, Back behavior and restart persistence.
+PASS: Final release APK signature verification; certificate matches previous regular APKs.
+PASS: Manifest has no requested permissions and no debuggable flag; no Firebase bundle; network attempts blocked.
+PASS: Release APK, AAB and vital release lint build.
+
+The last container-unit UI correction was additionally tested in the final APK after the upgrade suite. No user data was used in tests; the emulator holds only disposable synthetic records.
+
+Not performed: physical-device matrix, TalkBack/large-font audit, long-running large-journal/low-storage device testing, Play internal/closed testing or store review. Public signing and publisher/store information remain external release gates.
