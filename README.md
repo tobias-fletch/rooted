@@ -37,8 +37,6 @@ JDK 17+, SDK 36, Gradle wrapper. Build assembleRelease/bundleRelease; assembleDe
 
 The supplied APK is a non-debuggable release build signed with the existing DEVELOPMENT certificate for compatible personal updates. It is not a Play submission artifact. The AAB is unsigned until publisher-controlled signing is configured using ROOTED_KEYSTORE, ROOTED_STORE_PASSWORD, ROOTED_KEY_ALIAS and ROOTED_KEY_PASSWORD. Never commit keys or passwords. A future Play-signed installation may require an export/reinstall/import transition.
 
-## Public release gates
-
 ## Automatic APK builds
 
 Every push to main runs the JavaScript regression tests, Android lint and unit tests, then builds a signed APK. Pull requests run checks without signing secrets. You can also run Build Android APK manually from the Actions tab on main.
