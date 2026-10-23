@@ -18,6 +18,8 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    outputs:
+      signed: ${{ steps.signing.outputs.signed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -93,3 +95,64 @@ jobs:
           name: android-check-reports-${{ github.run_number }}
           path: app/build/reports/
           retention-days: 7
+
+  release:
+    name: Publish signed APK as GitHub Release
+    needs: build
+    # Only real pushes to main whose build job produced a verified signed APK.
+    # Pull requests, manual runs and unsigned builds never publish.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build.outputs.signed == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency:
+      group: android-release
+      cancel-in-progress: false
+    steps:
+      - name: Download signed APK artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: rooted-apk-${{ github.run_number }}
+          path: apk
+      - name: Prepare rooted.apk and checksums
+        id: prepare
+        run: |
+          set -euo pipefail
+          src="apk/rooted-build-${GITHUB_RUN_NUMBER}.apk"
+          test -f "$src"
+          (cd apk && sha256sum --check SHA256SUMS.txt)
+          mkdir -p release
+          cp "$src" release/rooted.apk
+          # Defence in depth: refuse to publish anything that does not verify as signed.
+          build_tools="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
+          "$build_tools/apksigner" verify release/rooted.apk
+          cd release
+          sha256sum rooted.apk > SHA256SUMS.txt
+          echo "sha256=$(cut -d ' ' -f 1 SHA256SUMS.txt)" >> "$GITHUB_OUTPUT"
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: build-${{ github.run_number }}
+          SHA256: ${{ steps.prepare.outputs.sha256 }}
+        run: |
+          set -euo pipefail
+          cat > notes.md <<NOTES
+          Signed Rooted APK built by GitHub Actions run ${GITHUB_RUN_NUMBER}.
+
+          - Commit: ${GITHUB_SHA}
+          - SHA256 (rooted.apk): ${SHA256}
+
+          Latest build: https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/rooted.apk
+          NOTES
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            # Re-run of the same workflow run: replace the assets instead of failing.
+            gh release upload "$TAG" release/rooted.apk release/SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$TAG" release/rooted.apk release/SHA256SUMS.txt \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "Rooted build ${GITHUB_RUN_NUMBER}" \
+              --notes-file notes.md \
+              --latest
+          fi
