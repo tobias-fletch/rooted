@@ -1,17 +1,31 @@
 .gradle/
 **/build/
+captures/
+.externalNativeBuild/
+.cxx/
+.idea/
+*.iml
+
+# SDK path and local signing. Never commit these.
 local.properties
 *.jks
 *.keystore
+*.pk8
 keystore.properties
-.idea/
+!keystore.properties.example
 
 # Local secrets, exports and generated packages
 .env
 .env.*
+!.env.example
 *.pem
 *.p12
 *.apk
 *.aab
+*.ap_
+*.apks
+*.idsig
+*.dex
+*.hprof
 rooted-*.json
 
