@@ -1,0 +1,91 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - name: Install Android SDK packages
+        run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
+      - name: Test plant care and history logic
+        working-directory: tests
+        run: |
+          node test.cjs
+          node test-timeline.cjs
+          node test-reservoir.cjs
+          node test-offline.cjs
+          node test-history.cjs
+      - name: Check Android build
+        run: ./gradlew --no-daemon lintRelease testReleaseUnitTest assembleRelease
+      - name: Build signed APK for existing Rooted installations
+        id: signing
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ROOTED_KEYSTORE_BASE64 }}
+          ROOTED_STORE_PASSWORD: ${{ secrets.ROOTED_STORE_PASSWORD }}
+          ROOTED_KEY_ALIAS: ${{ secrets.ROOTED_KEY_ALIAS }}
+          ROOTED_KEY_PASSWORD: ${{ secrets.ROOTED_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo 'Signing is pending: the unsigned artifact cannot be installed.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'signed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          export ROOTED_KEYSTORE="$RUNNER_TEMP/rooted-signing.keystore"
+          trap 'rm -f "$ROOTED_KEYSTORE"' EXIT
+          umask 077
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$ROOTED_KEYSTORE"
+          export ROOTED_VERSION_CODE=$((100 + GITHUB_RUN_NUMBER))
+          ./gradlew --no-daemon assembleRelease
+          mkdir -p apk
+          cp app/build/outputs/apk/release/app-release.apk "apk/rooted-build-${GITHUB_RUN_NUMBER}.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs apk/*.apk
+          cd apk
+          sha256sum *.apk > SHA256SUMS.txt
+          echo 'signed=true' >> "$GITHUB_OUTPUT"
+      - name: Downloadable APK
+        if: steps.signing.outputs.signed == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rooted-apk-${{ github.run_number }}
+          path: apk/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Unsigned build pending signing setup
+        if: steps.signing.outputs.signed == 'false'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rooted-UNSIGNED-not-installable-${{ github.run_number }}
+          path: app/build/outputs/apk/release/*-unsigned.apk
+          if-no-files-found: error
+          retention-days: 7
+      - name: Android check reports
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: android-check-reports-${{ github.run_number }}
+          path: app/build/reports/
+          retention-days: 7

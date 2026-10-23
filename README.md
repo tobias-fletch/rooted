@@ -39,4 +39,14 @@ The supplied APK is a non-debuggable release build signed with the existing DEVE
 
 ## Public release gates
 
+## Automatic APK builds
+
+Every push to main runs the JavaScript regression tests, Android lint and unit tests, then builds a signed APK. Pull requests run checks without signing secrets. You can also run Build Android APK manually from the Actions tab on main.
+
+Download rooted-apk-N from a successful run's Artifacts section, unzip it, and install the APK. Downloads are retained for 30 days. These builds use the same development certificate as the existing personal installation; they are not Play Store releases. Export a backup before updating, and install over the existing app without uninstalling. CI version codes are 100 plus the workflow run number; future local/Play releases must use a higher code than the installed version.
+
+Signing requires encrypted Actions secrets: ROOTED_KEYSTORE_BASE64, ROOTED_STORE_PASSWORD, ROOTED_KEY_ALIAS and ROOTED_KEY_PASSWORD. Until those are configured, the workflow uploads an explicitly labeled unsigned build that cannot be installed. With signing configured, the key is decoded into temporary runner storage and removed after signing. Use the existing certificate for compatible personal updates. Publishing a Play release still requires production signing. Workflows have read-only repository permissions and do not automatically publish releases or install anything on a phone.
+
+## Remaining public release gates
+
 Publisher-owned signing/Play App Signing, publisher/support details, public privacy policy, final store declarations, physical-device/accessibility/large-data testing, and Play testing/review remain. See TEST-RESULTS.txt for completed checks. Missing facts in old journals require user review; no software can reconstruct measurements or locations that were never recorded.
