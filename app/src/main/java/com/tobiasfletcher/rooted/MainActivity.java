@@ -110,6 +110,9 @@ public class MainActivity extends Activity {
             if (!"true".equals(result)) moveTaskToBack(true);
         });
     }
+    // API 33+ uses the OnBackInvokedDispatcher registered in onCreate.
+    // Keep this callback for back buttons on API 26-32 only.
+    @android.annotation.SuppressLint("GestureBackNavigation")
     @Override public void onBackPressed() { handleBack(); }
     private void notifyUser(String message) {
         runOnUiThread(() -> web.evaluateJavascript("if(typeof toast==='function')toast(" + JSONObject.quote(message) + ")", null));
